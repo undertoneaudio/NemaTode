@@ -32,7 +32,7 @@ int main(int argc, char** argv){
 		cout << fixed << setprecision(2) << setw(5) << setfill(' ') << gps.fix.almanac.averageSNR() << " dB   ";
 		cout << fixed << setprecision(2) << setw(6) << setfill(' ') << gps.fix.speed << " km/h [" << GPSFix::travelAngleToCompassDirection(gps.fix.travelAngle, true) << "]  ";
 		cout << fixed << setprecision(6) << gps.fix.latitude << "\xF8 " "N, " << gps.fix.longitude << "\xF8 " "E" << "  ";
-		cout << "+/- " << setprecision(1) << gps.fix.horizontalAccuracy() << "m  ";
+		cout << "+/- " << setprecision(1) << gps.fix.horizontalAccuracy << "m  ";
 		cout << endl;
 	};
 
