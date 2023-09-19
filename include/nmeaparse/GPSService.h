@@ -24,6 +24,7 @@ private:
 
 	void read_PSRF150(const NMEASentence& nmea);
 	void read_GPGGA	(const NMEASentence& nmea);
+	void read_PUBX	(const NMEASentence& nmea);
 	void read_GPGSA	(const NMEASentence& nmea);
 	void read_GPGSV	(const NMEASentence& nmea);
 	void read_GPRMC	(const NMEASentence& nmea);

@@ -155,6 +155,7 @@ namespace nmea {
 		double dilution;					// Combination of Vertical & Horizontal
 		double horizontalDilution;			// Horizontal dilution of precision, initialized to 100, best =1, worst = >20
 		double verticalDilution;			// Vertical is less accurate
+		double timeDilution;				// Time Dilution of Precision
 
 		double altitude;		// meters
 		double latitude;		// degrees N
@@ -164,9 +165,13 @@ namespace nmea {
 		int32_t trackingSatellites;
 		int32_t visibleSatellites;
 
+		double horizontalAccuracy;	// horizontal accuracy estimate in [m]
+		double verticalAccuracy;	// vertical accuracy estimate in [m]
+		double verticalVelcity;		// Vertical velocity (positive downwards) [m/s]
+
 		bool locked();
-		double horizontalAccuracy();
-		double verticalAccuracy();
+		// double horizontalAccuracy();
+		// double verticalAccuracy();
 		bool hasEstimate();
 		
 		std::chrono::seconds timeSinceLastUpdate();	// Returns seconds difference from last timestamp and right now.

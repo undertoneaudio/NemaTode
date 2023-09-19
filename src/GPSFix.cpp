@@ -274,17 +274,17 @@ bool GPSFix::locked(){
 	return haslock;
 }
 
-// Returns meters
-double GPSFix::horizontalAccuracy(){
-	// horizontal 2drms 95% = 4.0  -- from GPS CHIP datasheets
-	return 4.0 * horizontalDilution;
-}
+// // Returns meters
+// double GPSFix::horizontalAccuracy(){
+// 	// horizontal 2drms 95% = 4.0  -- from GPS CHIP datasheets
+// 	return 4.0 * horizontalDilution;
+// }
 
-// Returns meters
-double GPSFix::verticalAccuracy(){
-	// Vertical 2drms 95% = 6.0  -- from GPS CHIP datasheets
-	return 6.0 * verticalDilution;
-}
+// // Returns meters
+// double GPSFix::verticalAccuracy(){
+// 	// Vertical 2drms 95% = 6.0  -- from GPS CHIP datasheets
+// 	return 6.0 * verticalDilution;
+// }
 
 // Takes a degree travel heading (0-360') and returns the name
 std::string GPSFix::travelAngleToCompassDirection(double deg, bool abbrev){
@@ -389,7 +389,7 @@ std::string GPSFix::toString(){
 	ss.flags(oldflags);  //reset
 
 	ss << "   DOP (P,H,V):        " << dilution << ",   " << horizontalDilution << ",   " << verticalDilution << endl
-		<< "   Accuracy(H,V):      " << horizontalAccuracy() << " m,   " << verticalAccuracy() << " m" << endl;
+		<< "   Accuracy(H,V):      " << horizontalAccuracy << " m,   " << verticalAccuracy << " m" << endl;
 
 	ss << "   Altitude:           " << altitude << " m" << endl
 		<< "   Speed:              " << speed << " km/h" << endl

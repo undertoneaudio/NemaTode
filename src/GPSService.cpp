@@ -73,24 +73,28 @@ void GPSService::attachToParser(NMEAParser& _parser){
 	$GPZDA		- 1pps timing message
 	$PSRF150	- gps module "ok to send"
 	*/
-	_parser.setSentenceHandler("PSRF150", [this](const NMEASentence& nmea){
-		this->read_PSRF150(nmea);
+	_parser.setSentenceHandler("PUBX", [this](const NMEASentence& nmea){
+		this->read_PUBX(nmea);
 	});
-	_parser.setSentenceHandler("GPGGA", [this](const NMEASentence& nmea){
-		this->read_GPGGA(nmea);
-	});
-	_parser.setSentenceHandler("GPGSA", [this](const NMEASentence& nmea){
-		this->read_GPGSA(nmea);
-	});
-	_parser.setSentenceHandler("GPGSV", [this](const NMEASentence& nmea){
-		this->read_GPGSV(nmea);
-	});
-	_parser.setSentenceHandler("GPRMC", [this](const NMEASentence& nmea){
-		this->read_GPRMC(nmea);
-	});
-	_parser.setSentenceHandler("GPVTG", [this](const NMEASentence& nmea){
-		this->read_GPVTG(nmea);
-	});
+
+	// _parser.setSentenceHandler("PSRF150", [this](const NMEASentence& nmea){
+	// 	this->read_PSRF150(nmea);
+	// });
+	// _parser.setSentenceHandler("GPGGA", [this](const NMEASentence& nmea){
+	// 	this->read_GPGGA(nmea);
+	// });
+	// _parser.setSentenceHandler("GPGSA", [this](const NMEASentence& nmea){
+	// 	this->read_GPGSA(nmea);
+	// });
+	// _parser.setSentenceHandler("GPGSV", [this](const NMEASentence& nmea){
+	// 	this->read_GPGSV(nmea);
+	// });
+	// _parser.setSentenceHandler("GPRMC", [this](const NMEASentence& nmea){
+	// 	this->read_GPRMC(nmea);
+	// });
+	// _parser.setSentenceHandler("GPVTG", [this](const NMEASentence& nmea){
+	// 	this->read_GPVTG(nmea);
+	// });
 
 }
 
@@ -189,6 +193,120 @@ void GPSService::read_GPGGA(const NMEASentence& nmea){
 		else {
 			// leave old value
 		}
+
+		//calling handlers
+		if (lockupdate){
+			this->onLockStateChanged(this->fix.haslock);
+		}
+		this->onUpdate();
+	}
+	catch (NumberConversionError& ex)
+	{
+		NMEAParseError pe("GPS Number Bad Format [$GPGGA] :: " + ex.message, nmea);
+		throw pe;
+	}
+	catch (NMEAParseError& ex)
+	{
+		NMEAParseError pe("GPS Data Bad Format [$GPGGA] :: " + ex.message, nmea);
+		throw pe;
+	}
+}
+
+void GPSService::read_PUBX(const NMEASentence& nmea){
+	/* -- EXAMPLE --
+	$PUBX,00,152433.95,5003.94277,N,01953.02335,E,252.631,G3,2.0,3.2,0.473,101.87,-0.263,,1.31,1.91,1.55,10,0,0*73
+	*/
+	try
+	{
+		if (!nmea.checksumOK()){
+			throw NMEAParseError("Checksum is invalid!");
+		}
+
+		if (nmea.parameters.size() < 19){
+			throw NMEAParseError("GPS data is missing parameters.");
+		}
+
+
+		// TIMESTAMP
+		this->fix.timestamp.setTime(parseDouble(nmea.parameters[1]));
+
+		string sll;
+		string dir;
+		// LAT
+		sll = nmea.parameters[2];
+		dir = nmea.parameters[3];
+		if (!sll.empty()){
+			this->fix.latitude = convertLatLongToDeg(sll, dir);
+		}
+
+		// LONG
+		sll = nmea.parameters[4];
+		dir = nmea.parameters[5];
+		if (!sll.empty()){
+			this->fix.longitude = convertLatLongToDeg(sll, dir);
+		}
+
+		// ALTITUDE
+		if (!nmea.parameters[6].empty()){
+			this->fix.altitude = parseDouble(nmea.parameters[6]);
+		}
+		else {
+			// leave old value
+		}
+
+		// FIX TYPE
+		bool lockupdate = false;
+		const auto& fixtype = nmea.parameters[7];
+		if( fixtype == "G3" || fixtype == "D3" )
+		{
+			this->fix.type = 3;
+			lockupdate = this->fix.setlock(true);
+		}
+		else if( fixtype == "G2" || fixtype == "D2")
+		{
+			this->fix.type = 2;
+			lockupdate = this->fix.setlock(true);
+		}
+		else
+		{
+			this->fix.type = 0;
+			lockupdate = this->fix.setlock(false);
+		}
+
+		// Horizontal accuracy
+		double ha = parseDouble(nmea.parameters[8]);
+		this->fix.horizontalAccuracy = ha;
+
+		// vertical accuracy
+		double va = parseDouble(nmea.parameters[9]);
+		this->fix.verticalAccuracy = va;
+
+		// speed over ground
+		double sog = parseDouble(nmea.parameters[10]);
+		this->fix.speed = sog;
+
+		// vertical velocity
+		double vv = parseDouble(nmea.parameters[12]);
+		this->fix.verticalVelcity = vv;
+
+		// HORIZONTAL DILUTION OF PRECISION -- HDOP
+		double hdop = parseDouble(nmea.parameters[14]);
+		this->fix.horizontalDilution = hdop;
+
+		// VERTICAL DILUTION OF PRECISION -- VDOP
+		double vdop = parseDouble(nmea.parameters[15]);
+		this->fix.verticalDilution = vdop;
+
+		// Time DILUTION of precission
+		double tdop = parseDouble(nmea.parameters[16]);
+		this->fix.timeDilution = tdop;
+
+		// TRACKING SATELLITES
+		this->fix.trackingSatellites = (int32_t)parseInt(nmea.parameters[17]);
+		if (this->fix.visibleSatellites < this->fix.trackingSatellites){
+			this->fix.visibleSatellites = this->fix.trackingSatellites;		// the visible count is in another sentence.
+		}
+
 
 		//calling handlers
 		if (lockupdate){
