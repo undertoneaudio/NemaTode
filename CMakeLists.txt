@@ -10,6 +10,8 @@ set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Add postfix to target for Debug build.
 set(CMAKE_RELWITHDEBINFO_POSTFIX "rd" CACHE STRING "Add postfix to target for RelWithDebInfo build.")
 set(CMAKE_MINSIZEREL_POSTFIX "s" CACHE STRING "Add postfix to target for MinSizeRel build")
 
+set(BUILD_EXAMPLES false)
+
 set(headers
 	include/nmeaparse/Event.h
 	include/nmeaparse/GPSFix.h
@@ -70,10 +72,14 @@ install(
 	DESTINATION ${INSTALL_CONFIGDIR}
 )
 
-# build demo_advanced
-add_executable(demo_advanced demo_advanced.cpp)
-target_link_libraries(demo_advanced ${PROJECT_NAME})
+if(BUILD_EXAMPLES)
 
-# build demo_simple
-add_executable(demo_simple demo_simple.cpp)
-target_link_libraries(demo_simple ${PROJECT_NAME})
+	# build demo_advanced
+	add_executable(demo_advanced demo_advanced.cpp)
+	target_link_libraries(demo_advanced ${PROJECT_NAME})
+
+	# build demo_simple
+	add_executable(demo_simple demo_simple.cpp)
+	target_link_libraries(demo_simple ${PROJECT_NAME})
+
+endif()
