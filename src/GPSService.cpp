@@ -76,25 +76,24 @@ void GPSService::attachToParser(NMEAParser& _parser){
 	_parser.setSentenceHandler("PUBX", [this](const NMEASentence& nmea){
 		this->read_PUBX(nmea);
 	});
-
-	// _parser.setSentenceHandler("PSRF150", [this](const NMEASentence& nmea){
-	// 	this->read_PSRF150(nmea);
-	// });
-	// _parser.setSentenceHandler("GPGGA", [this](const NMEASentence& nmea){
-	// 	this->read_GPGGA(nmea);
-	// });
-	// _parser.setSentenceHandler("GPGSA", [this](const NMEASentence& nmea){
-	// 	this->read_GPGSA(nmea);
-	// });
-	// _parser.setSentenceHandler("GPGSV", [this](const NMEASentence& nmea){
-	// 	this->read_GPGSV(nmea);
-	// });
-	// _parser.setSentenceHandler("GPRMC", [this](const NMEASentence& nmea){
-	// 	this->read_GPRMC(nmea);
-	// });
-	// _parser.setSentenceHandler("GPVTG", [this](const NMEASentence& nmea){
-	// 	this->read_GPVTG(nmea);
-	// });
+	_parser.setSentenceHandler("PSRF150", [this](const NMEASentence& nmea){
+		this->read_PSRF150(nmea);
+	});
+	_parser.setSentenceHandler("GPGGA", [this](const NMEASentence& nmea){
+		this->read_GPGGA(nmea);
+	});
+	_parser.setSentenceHandler("GPGSA", [this](const NMEASentence& nmea){
+		this->read_GPGSA(nmea);
+	});
+	_parser.setSentenceHandler("GPGSV", [this](const NMEASentence& nmea){
+		this->read_GPGSV(nmea);
+	});
+	_parser.setSentenceHandler("GPRMC", [this](const NMEASentence& nmea){
+		this->read_GPRMC(nmea);
+	});
+	_parser.setSentenceHandler("GPVTG", [this](const NMEASentence& nmea){
+		this->read_GPVTG(nmea);
+	});
 
 }
 
@@ -316,12 +315,12 @@ void GPSService::read_PUBX(const NMEASentence& nmea){
 	}
 	catch (NumberConversionError& ex)
 	{
-		NMEAParseError pe("GPS Number Bad Format [$GPGGA] :: " + ex.message, nmea);
+		NMEAParseError pe("GPS Number Bad Format [$PUBX] :: " + ex.message, nmea);
 		throw pe;
 	}
 	catch (NMEAParseError& ex)
 	{
-		NMEAParseError pe("GPS Data Bad Format [$GPGGA] :: " + ex.message, nmea);
+		NMEAParseError pe("GPS Data Bad Format [$PUBX] :: " + ex.message, nmea);
 		throw pe;
 	}
 }
